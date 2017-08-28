@@ -3,7 +3,7 @@
       app-header-layout {
         background-color: #E5E5E5;
       }
-
+	  
       .content {
         padding: 15px;
       }
@@ -33,10 +33,10 @@
       }
 
       .title {
-        @apply(--paper-font-headline);
+        #@apply(--paper-font-headline);
         margin: 10px;
       }
-
+	  
       .summary {
         margin: 15px auto 0px;
         text-align: center;
@@ -157,12 +157,21 @@ Polymer({
   isdisarmed:  function(alarm) { return alarm.state == "disarmed"; },
   issecure:    function(all)   { return this.opensensors(all).length == 0; },
   opensensors: function(all)   { 
-    ret = all.filter(function (e) { return ['on', 'open', 'detected', 'unlocked'].indexOf(e.state) > -1; }); 
-    return ret;
+	if (all == false) {
+		return false;
+	} else {
+		ret = all.filter(function (e) { return ['on', 'open', 'detected', 'unlocked'].indexOf(e.state) > -1; }); 
+		return ret;
+	}
   },
 
   computeSensors: function(hass, ids) {
-    return ids.map(function (key) { return hass.states[key]; }).filter(function (e) { return e != undefined; });
+	if (ids == undefined) {
+		// Control the exception when this.alarm is not ready
+		return false;
+	} else {
+		return ids.map(function (key) { return hass.states[key]; }).filter(function (e) { return e != undefined; });
+	}
   },
 
   computeIcon: function (state) {
@@ -204,7 +213,9 @@ Polymer({
 
   // Observer: polymer gaurantees that this won't be called util hass and panel are both defined
   onPanelUpdate: function(hass, panel) {
+	//console.log('onPanelUpdate');
     this.alarm = hass.states[panel.config.alarmid];
+	//console.log('Alarm is ', this.alarm);
   },
 
 });
